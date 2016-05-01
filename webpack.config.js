@@ -15,5 +15,7 @@ module.exports = {
  },
  resolve: {
    extensions: ['', '.js', '.es6']
- }
+ },
+ // debug: true,
+ devtool: 'inline-source-map'
 }
