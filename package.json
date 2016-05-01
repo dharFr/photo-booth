@@ -1,0 +1,26 @@
+{
+  "name": "photo-booth",
+  "version": "0.0.0",
+  "description": "A simple photo booth web application, as an excuse to experiment with mediaRecorder API and CycleJS",
+  "main": " ",
+  "scripts": {
+    "clear": "rm -rf dist",
+    "build": "webpack",
+    "start": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Olivier Audard <audard@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@cycle/core": "^6.0.3",
+    "@cycle/dom": "^9.4.0",
+    "rx": "^4.1.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.7.7",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.6.0",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  }
+}
