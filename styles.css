@@ -4,33 +4,70 @@ body {
 }
 
 .app-container {
-  --head-fg-color: #feffed;
-  --main-bg-color: #a00a0a;
-  --sec-bg-color: #1d1715;
+  --dark-brown       : #1d1715;
+  --light-gray       : #e6e6e6;
+  --light-yellow     : #feffed;
+  --that-red         : hsl(0, 88%, 33%);
+  --that-lighter-red : hsl(0, 88%, 43%);
 
-  display: flex;
-  flex-direction: column;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
+  --footer-bg-color : var(--light-gray);
+  --footer-fg-color : var(--that-red);
+  --header-bg-color : var(--that-red);
+  --header-fg-color : var(--light-yellow);
+  --video-bg-color  : var(--dark-brown);
+
+  display        : flex;
+  flex-direction : column;
+  height         : 100%;
+  left           : 0;
+  position       : absolute;
+  top            : 0;
+  width          : 100%;
 }
 
-.head {
-  background: var(--main-bg-color);
-  color: var(--head-fg-color);
-  flex: 1;
-  text-align: center;
+.header {
+  background : var(--header-bg-color);
+  color      : var(--header-fg-color);
+  flex       : 0 1;
+  text-align : center;
 }
 
-.head h1 {
+.header h1 {
   margin: 0;
 }
 
 .content {
+  flex: 1;
 }
 
 .content video {
+  background: var(--video-bg-color);
   width: 100%;
-  background: var(--sec-bg-color);
+}
+
+.footer {
+  background : var(--footer-bg-color);
+  color      : var(--footer-fg-color);
+  flex       : 0 1;
+  text-align : center;
+}
+
+.footer .toggle-record-btn {
+  background    : var(--that-lighter-red);
+  border        : none;
+  border-radius : 2.5em;
+  display       : inline-block;
+  height        : 5em;
+  margin        : 5px 0;
+  padding       : 0.2em 0 0 0.3em;
+  width         : 5em;
+}
+
+.footer .toggle-record-btn:focus {
+  box-shadow : 0 0 0 2pt var(--dark-brown);
+  outline    : none;
+}
+
+.footer .toggle-record-btn svg {
+  fill: var(--light-yellow);
 }

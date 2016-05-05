@@ -1,6 +1,7 @@
-import Cycle from '@cycle/core';
-import {div, h1, video, makeDOMDriver} from '@cycle/dom';
-import {makeUserMediaDriver} from './drivers/userMediaDriver.js';
+import Cycle from '@cycle/core'
+import {div, h1, button, video, makeDOMDriver} from '@cycle/dom'
+import {makeUserMediaDriver} from './drivers/userMediaDriver.js'
+import videocamSvg from './svg/ic_videocam_48px.svg'
 
 function main(sources) {
   const userStreamURL$ = sources.userMedia
@@ -8,15 +9,22 @@ function main(sources) {
     .map(stream => {
       return stream ? URL.createObjectURL(stream) : ''
     })
+
+  const recordBtnClick$ = sources.DOM
+    .select('.toggle-record-btn').events('click')
+
   const sinks = {
     DOM: userStreamURL$
       .map(url => {
         return div('.app-container', [
-          div('.head', [
+          div('.header', [
             h1('Photo Booth')
           ]),
           div('.content', [
-            video({autoplay: true, controls: false, muted: true, src:url})
+            video({autoplay: true, controls: false, muted: true, src:url}),
+          ]),
+          div('.footer', [
+            button('.toggle-record-btn', {innerHTML: videocamSvg})
           ])
         ])
       })
