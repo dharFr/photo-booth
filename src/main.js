@@ -22,7 +22,18 @@ function getSupportedMimeType () {
   return options;
 }
 
-function main(sources) {
+function renderVideoView(url) {
+  return video({src: url, autoplay: true, controls: false, muted: true})
+}
+
+function renderControlBar() {
+  return div('.footer', [
+    button('.toggle-record-btn', {innerHTML: videocamSvg})
+  ])
+}
+
+function intent(sources) {
+
   const userMediaStream$ = sources.userMedia
   const userMediaURL$    = userMediaStream$
     .map(stream => URL.createObjectURL(stream))
@@ -65,7 +76,16 @@ function main(sources) {
     }, [])
     .startWith(null) // Start with a null value so state$ exists from the beginning
 
-  const state$ = Rx.Observable.combineLatest(
+  return {
+    userMediaStream$,
+    userMediaURL$,
+    recorderState$,
+    recordedBlobs$
+  }
+}
+
+function model({userMediaURL$, recorderState$, recordedBlobs$}) {
+  return Rx.Observable.combineLatest(
     userMediaURL$,
     recorderState$,
     recordedBlobs$,
@@ -74,25 +94,28 @@ function main(sources) {
       return {url, state, blobs}
     }
   )
+}
 
-  const vtree$ = state$
-    .map( ({url, state, blob}) => {
-      return div('.app-container', [
-        div('.header', [
-          h1('Photo Booth')
-        ]),
-        div('.content', [
-          video({src: url, autoplay: true, controls: false, muted: true}),
-        ]),
-        div('.footer', [
-          button('.toggle-record-btn', {innerHTML: videocamSvg})
-        ])
-      ])
-    })
+function view(state$) {
+  return state$.map( ({url, state, blob}) =>
+    div('.app-container', [
+      div('.header', [
+        h1('Photo Booth')
+      ]),
+      div('.content', [
+        renderVideoView(url)
+      ]),
+      renderControlBar()
+    ])
+  )
+}
 
-  const sinks = {
-    DOM: vtree$,
-    mediaRecorder: userMediaStream$
+function main(sources) {
+  const actions = intent(sources)
+  const state$  = model(actions);
+  const sinks   = {
+    DOM: view(state$),
+    mediaRecorder: actions.userMediaStream$
   }
   return sinks
 }
