@@ -1,5 +1,5 @@
 import Cycle from '@cycle/core'
-import {div, h1, button, video, makeDOMDriver} from '@cycle/dom'
+import {div, h1, ul, li, button, video, makeDOMDriver} from '@cycle/dom'
 import {makeUserMediaDriver}     from './drivers/userMediaDriver.js'
 import {makeMediaRecorderDriver} from './drivers/mediaRecorderDriver.js'
 import videocamSvg from './svg/ic_videocam_48px.svg'
@@ -23,7 +23,19 @@ function getSupportedMimeType () {
 }
 
 function renderVideoView(url) {
-  return video({src: url, autoplay: true, controls: false, muted: true})
+  return div('.video-container', [
+    video({src: url, autoplay: true, controls: false, muted: true})
+  ])
+}
+
+function renderRecordsView(records) {
+  return (records && records.length) ? div('.records', [
+    div('.records-list-wrapper', [
+      ul('.records-list', records.map( ({idx}) =>
+        li('.records-item', `${idx}`)
+      ))
+    ])
+  ]) : null
 }
 
 function renderControlBar() {
@@ -57,7 +69,7 @@ function intent(sources) {
     })
     .startWith('inactive')
 
-  const recordedBlobs$ = sources.mediaRecorder.events('start')
+  const records$ = sources.mediaRecorder.events('start')
     .flatMap( _ => {
       return sources.mediaRecorder.events('dataavailable')
         .takeUntil(sources.mediaRecorder.events('stop'))
@@ -70,8 +82,8 @@ function intent(sources) {
           }, [])
         .map( recordedChunks => new Blob(recordedChunks, getSupportedMimeType()))
     })
-    .scan( (records, blob) => {
-      records.push(blob)
+    .scan( (records, blob, idx) => {
+      records.push({idx, blob})
       return records
     }, [])
     .startWith(null) // Start with a null value so state$ exists from the beginning
@@ -80,31 +92,30 @@ function intent(sources) {
     userMediaStream$,
     userMediaURL$,
     recorderState$,
-    recordedBlobs$
+    records$
   }
 }
 
-function model({userMediaURL$, recorderState$, recordedBlobs$}) {
+function model({userMediaURL$, recorderState$, records$}) {
   return Rx.Observable.combineLatest(
     userMediaURL$,
     recorderState$,
-    recordedBlobs$,
-    (url, state, blobs) => {
-      console.log('State Changed:', {url, state, blobs})
-      return {url, state, blobs}
+    records$,
+    (url, state, records) => {
+      console.log('State Changed:', {url, state, records})
+      return {url, state, records}
     }
   )
 }
 
 function view(state$) {
-  return state$.map( ({url, state, blob}) =>
+  return state$.map( ({url, state, records}) =>
     div('.app-container', [
       div('.header', [
         h1('Photo Booth')
       ]),
-      div('.content', [
-        renderVideoView(url)
-      ]),
+      renderVideoView(url),
+      renderRecordsView(records),
       renderControlBar()
     ])
   )
@@ -122,7 +133,18 @@ function main(sources) {
 
 const drivers = {
   DOM           : makeDOMDriver('#app'),
-  userMedia     : makeUserMediaDriver({audio: true, video: true}),
+  userMedia     : makeUserMediaDriver({
+    audio: true,
+    video: {
+      mandatory: {
+        minWidth: 1280,
+        minHeight: 720
+      },
+      optionnal: {
+        facingMode: "user"
+      }
+    }
+  }),
   mediaRecorder : makeMediaRecorderDriver()
 };
 

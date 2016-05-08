@@ -36,13 +36,43 @@ body {
   margin: 0;
 }
 
-.content {
+.video-container {
   flex: 1;
 }
 
-.content video {
+.video-container video {
   background: var(--video-bg-color);
   width: 100%;
+}
+
+.records {
+  flex: 0 1;
+}
+
+.records-list-wrapper {
+  overflow-x: scroll;
+}
+
+ul.records-list {
+  background: var(--footer-bg-color);
+  color: var(--footer-fg-color);
+  height: 52px;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+  white-space: nowrap;
+}
+
+li.records-item {
+  background: var(--light-yellow);
+  border-radius: 2px;
+  display: inline-block;
+  font-size: 1.5em;
+  height: 50px;
+  line-height: 50px;
+  margin: 1px 2px;
+  text-align: center;
+  width: 50px;
 }
 
 .footer {
